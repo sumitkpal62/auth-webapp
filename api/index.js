@@ -1,39 +1,22 @@
-import express from 'express';
-import connectDB from './config/db.js';
-
+import express from "express";
+import connectDB from "./config/db.js";
+import userRouter from "./routes/userRoute.js";
+import authRouter from "./routes/authRoute.js";
+import { userCheck } from "./middlewares/authMiddleware.js";
 
 const PORT = 4000;
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
 // Connect DB
 
 connectDB();
 
+// Use of express router
+app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter, userCheck);
 
-app.get("/", (req, res)=>{
-    res.json({
-        name:"Sumit",
-        education: "Graduation"
-    })
-})
-
-app.post("/user", async(req, res)=>{
-    const {username, batch} = req.body
-    try {
-        res.status(200).json({
-            Name: username,
-            Class: batch
-        })
-    } catch (error) {
-        res.status(400).json({
-            message: "Something went wrong!"
-        })
-    }
-})
-
-
-app.listen(PORT, ()=>{
-    console.log(`Server started at Port: ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Server started at Port: ${PORT}`);
+});

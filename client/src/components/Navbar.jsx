@@ -20,8 +20,13 @@ const Navbar = () => {
           <Link to={"/about"}>
             <li>About</li>
           </Link>
-          <Link to={"/signin"}>
+          <Link to={"/signup"}>
             <li className="pl-3 pr-3 pt-1 pb-1 bg-blue-600 rounded-full text-white">
+              Sign Up
+            </li>
+          </Link>
+          <Link to={"/signin"}>
+            <li className="pl-3 pr-3 pt-1 pb-1 text-blue-600 rounded-full bg-white border border-blue-600 hover:bg-blue-600 hover:text-white transition duration-400">
               Sign In
             </li>
           </Link>
