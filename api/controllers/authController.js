@@ -32,44 +32,49 @@ const signup = async (req, res, next) => {
   }
 };
 
-const signin = async (req, res) => {
+const signin = async (req, res, next) => {
   const { username, password } = req.body;
-  if (username === "" || password === "") {
-    return res.status(400).json({
-      message: "Please enter all fields",
-    });
-  }
-  const validUser = await User.findOne({ username });
-  if (!validUser) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
-  }
-  const validPassword = bcrypt.compareSync(password, validUser._doc.password);
-
-  if (validPassword) {
-    const { password, ...userData } = validUser._doc;
-    const jwt_token = jwt.sign({ id: userData._id }, process.env.JWT_TOKEN, {
-      expiresIn: "15min",
-    });
-
-    res
-      .cookie("access_token", jwt_token, {
-        httpOnly: true,
-        maxAge: 15 * 60 * 100,
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: "Valid user",
-        userData,
+  try {
+    if (username === "" || password === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter all fields",
       });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: "Invalid credentials",
-    });
+    }
+    const validUser = await User.findOne({ username });
+    if (!validUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const validPassword = bcrypt.compareSync(password, validUser._doc.password);
+
+    if (validPassword) {
+      const { password, ...userData } = validUser._doc;
+      const jwt_token = jwt.sign({ id: userData._id }, process.env.JWT_TOKEN, {
+        expiresIn: "15min",
+      });
+
+      res
+        .cookie("access_token", jwt_token, {
+          httpOnly: true,
+          maxAge: 15 * 60 * 100,
+        })
+        .status(200)
+        .json({
+          success: true,
+          message: "Sign in successful",
+          userData,
+        });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 

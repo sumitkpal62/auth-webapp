@@ -1,15 +1,22 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  signInFailed,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
   const [userData, setUserData] = useState({
     username: "",
     password: "",
   });
+  const { loading, error, errorDetails } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const handleOnChange = (event) => {
     setUserData({
       ...userData,
@@ -17,8 +24,9 @@ const SignIn = () => {
     });
   };
 
-  const sendData = async ({ username = "test7", password = "test8" }) => {
+  const sendData = async ({ username, password }) => {
     try {
+      dispatch(signInStart());
       const response = await axios.post("api/auth/signin", {
         username,
         password,
@@ -26,9 +34,11 @@ const SignIn = () => {
       if (response) {
         toast.success("Sign in successful");
         navigate("/");
+        dispatch(signInSuccess(response.data));
       }
     } catch (error) {
       toast.error(error.response.data.message);
+      dispatch(signInFailed(error.response.data));
     }
   };
 
