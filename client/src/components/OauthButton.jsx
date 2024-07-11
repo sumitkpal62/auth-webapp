@@ -4,9 +4,11 @@ import { app } from "../config/firebaseConfig";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const OauthButton = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleOnClick = async (event) => {
     event.preventDefault();
     try {
@@ -21,6 +23,7 @@ const OauthButton = () => {
       const res = await axios.post("/api/auth/google", userDetails);
       const data = await res.data;
       dispatch(signInSuccess(data));
+      navigate("/");
     } catch (error) {
       console.log("Could not login with google", error);
     }

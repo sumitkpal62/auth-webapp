@@ -35,6 +35,7 @@ const SignIn = () => {
       if (response) {
         toast.success("Sign in successful");
         navigate("/");
+        console.log(response.data);
         dispatch(signInSuccess(response.data));
       }
     } catch (error) {

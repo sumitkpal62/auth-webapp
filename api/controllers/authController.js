@@ -83,14 +83,18 @@ const google = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-      const { password: hashedPassword, ...rest } = user._doc;
+      const { password: hashedPassword, ...userData } = user._doc;
       res
         .cookie("access_token", token, {
           httpOnly: true,
           maxAge: 15 * 60 * 100,
         })
         .status(200)
-        .json(rest);
+        .json({
+          success: true,
+          message: "Sign in successful",
+          userData,
+        });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
@@ -105,17 +109,24 @@ const google = async (req, res, next) => {
       });
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
-      const { password: hashedPassword2, ...rest } = newUser._doc;
+      const { password: hashedPassword2, ...userData } = newUser._doc;
       res
         .cookie("access-token", token, {
           httpOnly: true,
           maxAge: 15 * 60 * 100,
         })
-        .status(200)
-        .json(rest);
+        .status(201)
+        .json({
+          success: true,
+          message: "User created successful",
+          userData,
+        });
     }
   } catch (error) {
-    next(error);
+    // next(error);
+    res.json({
+      err: true,
+    });
   }
 };
 
