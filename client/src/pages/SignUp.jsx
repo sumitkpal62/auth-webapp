@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import OauthButton from "../components/OauthButton";
 
 const SignUp = () => {
   const [userData, setUserData] = useState({
@@ -45,7 +46,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex flex-col m-auto min-w-[400px] max-w-[500px] border border-blue-500 rounded-md mt-10 h-[65vh] shadow-lg shadow-blue-600">
+    <div className="flex flex-col m-auto min-w-[400px] max-w-[500px] border border-blue-500 rounded-md mt-10 h-[70vh] shadow-lg shadow-blue-600">
       <div>
         <h1 className="text-center pb-2 text-3xl mt-3 font-bold border-b-[1px] border-blue-500">
           Sign Up
@@ -82,6 +83,7 @@ const SignUp = () => {
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
+        <OauthButton />
       </form>
       <div className="text-center p-[10px]">
         <p>

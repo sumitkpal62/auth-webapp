@@ -8,6 +8,7 @@ import {
   signInSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import OauthButton from "../components/OauthButton";
 
 const SignIn = () => {
   const [userData, setUserData] = useState({
@@ -50,7 +51,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="flex flex-col m-auto min-w-[400px] max-w-[500px] border border-blue-500 rounded-md mt-10 h-[65vh] shadow-lg shadow-blue-600">
+    <div className="flex flex-col m-auto min-w-[400px] max-w-[500px] border border-blue-500 rounded-md mt-10 h-[70vh] shadow-lg shadow-blue-600">
       <div>
         <h1 className="text-center pb-2 text-3xl mt-3 font-bold border-b-[1px] border-blue-500">
           Sign In
@@ -76,6 +77,7 @@ const SignIn = () => {
         <button className="border text-white border-blue-600 w-1/2 self-center p-2 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300">
           Sign In
         </button>
+        <OauthButton />
       </form>
 
       <div className="text-center p-[10px]">
