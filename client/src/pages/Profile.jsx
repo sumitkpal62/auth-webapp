@@ -38,7 +38,7 @@ const Profile = () => {
         (error) => setImageError(true),
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-            setFormData({ ...formData, ProfilePhoto: downloadURL })
+            setFormData({ ...formData, profilePhoto: downloadURL })
           );
         }
       );
