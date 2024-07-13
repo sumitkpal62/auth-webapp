@@ -30,7 +30,7 @@ You can simply setup the mongodb database from [MongoDB_Setup](https://cloud.mon
 
 After setting up account put the line shown below in your .env file
 
-> DATABASE_URL = <Your_database_connection_url>
+> MONGODB_URL = "mongodb+srv://<username>:<password>@cluster0.6cgcs6t.mongodb.net/auth_app"
 
 ### Start the backend server
 
