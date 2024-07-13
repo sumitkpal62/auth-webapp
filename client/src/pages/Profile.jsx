@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -7,15 +7,27 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../config/firebaseConfig";
+import axios from "axios";
+import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+  signOut,
+} from "../redux/user/userSlice";
+import { toast } from "react-toastify";
 
 const Profile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading } = useSelector((state) => state.user);
   const userData = currentUser.userData;
   const fileRef = useRef();
   const [image, setImage] = useState(undefined);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({});
   const [imageError, setImageError] = useState(Boolean);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     handleFileUpload(image);
@@ -45,12 +57,65 @@ const Profile = () => {
     } catch (error) {}
   };
 
+  const handleOnChange = (evt) => {
+    setFormData({ ...formData, [evt.target.id]: evt.target.value });
+  };
+
+  const handleOnSubmit = async (evt) => {
+    evt.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const response = await axios.post(
+        `/api/user/update/${currentUser.userData._id}`,
+        formData
+      );
+      const data = await response.data;
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      toast.success("User data updated successfully");
+      dispatch(updateUserSuccess(data));
+    } catch (error) {
+      toast.error(error.response.data.message);
+      dispatch(updateUserFailure(error.response.data));
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const response = await axios.delete(
+        `/api/user/delete/${currentUser.userData._id}`
+      );
+      const data = await response.data;
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data));
+        return;
+      }
+      dispatch(deleteUserSuccess());
+      toast.success(data.message);
+    } catch (error) {
+      toast.error("Unauthorized, Sign In again!");
+      dispatch(deleteUserFailure(error));
+    }
+  };
+
+  const onSignOut = async () => {
+    dispatch(signOut());
+    try {
+      await axios.get("/api/auth/signout");
+    } catch (error) {
+      console.log("Something went wrong!");
+    }
+  };
+
   return (
     <div className="flex flex-col m-auto min-w-[400px] max-w-[500px] border border-blue-500 rounded-md mt-10 h-[75vh] shadow-lg shadow-blue-600">
       <div>
         <h1 className="text-center text-3xl mt-3 font-bold ">Profile</h1>
       </div>
-      <form className="flex flex-col gap-3 p-3 mt-3">
+      <form className="flex flex-col gap-3 p-3 mt-3" onSubmit={handleOnSubmit}>
         <input
           type="file"
           ref={fileRef}
@@ -83,6 +148,7 @@ const Profile = () => {
           placeholder="Username"
           id="username"
           defaultValue={userData.username}
+          onChange={handleOnChange}
         />
         <input
           className="outline-blue-500 border p-2 rounded w-1/2 m-auto"
@@ -90,22 +156,30 @@ const Profile = () => {
           placeholder="Email"
           id="email"
           defaultValue={userData.email}
+          onChange={handleOnChange}
         />
         <input
           className="outline-blue-500 border p-2 rounded w-1/2 m-auto"
           type="password"
           placeholder="Password"
           id="password"
+          onChange={handleOnChange}
         />
         <button className="border text-white border-blue-600 w-1/2 self-center p-2 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300">
-          Update
+          {loading ? "Updating..." : "Update"}
         </button>
       </form>
       <div className="flex justify-between px-5">
-        <span className="text-red-500 cursor-pointer hover:opacity-85">
+        <span
+          className="text-red-500 cursor-pointer hover:opacity-85"
+          onClick={handleDeleteAccount}
+        >
           Delete Account
         </span>
-        <span className="text-red-500 cursor-pointer hover:opacity-85">
+        <span
+          className="text-red-500 cursor-pointer hover:opacity-85"
+          onClick={onSignOut}
+        >
           Sign Out
         </span>
       </div>

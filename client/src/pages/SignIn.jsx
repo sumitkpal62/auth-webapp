@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  signInFailed,
+  signInFailure,
   signInStart,
   signInSuccess,
 } from "../redux/user/userSlice";
@@ -35,12 +35,11 @@ const SignIn = () => {
       if (response) {
         toast.success("Sign in successful");
         navigate("/");
-        console.log(response.data);
         dispatch(signInSuccess(response.data));
       }
     } catch (error) {
       toast.error(error.response.data.message);
-      dispatch(signInFailed(error.response.data));
+      dispatch(signInFailure(error.response.data));
     }
   };
 

@@ -2,16 +2,8 @@ import User from "../models/userModel.js";
 import { errorHandler } from "../utils/customError.js";
 import bcrypt from "bcrypt";
 
-const registerUser = async (req, res) => {
-  res.json({
-    message: "The user is registered successfully.",
-  });
-};
-
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id) {
-    // return res.status(400).json("3rd point");
-
     return next(errorHandler(401, false, "You can update only your account!"));
   }
   try {
@@ -41,4 +33,19 @@ const updateUser = async (req, res) => {
   }
 };
 
-export { registerUser, updateUser };
+const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, false, "You can delete only your profile."));
+  }
+  try {
+    await User.findByIdAndDelete(req.user.id);
+    res.status(200).json({
+      success: true,
+      message: "Account is deleted successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { deleteUser, updateUser };

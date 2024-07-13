@@ -123,11 +123,21 @@ const google = async (req, res, next) => {
         });
     }
   } catch (error) {
-    // next(error);
-    res.json({
-      err: true,
-    });
+    next(errorHandler(error));
   }
 };
 
-export { signup, signin, google };
+const signout = async (req, res) => {
+  if (!req.cookies.access_token) {
+    return res.status(404).json({
+      success: true,
+      message: "Already signed out, Login Again!",
+    });
+  }
+  res.clearCookie("access_token").status(200).json({
+    success: true,
+    message: "Sign out successfully",
+  });
+};
+
+export { signup, signin, google, signout };
