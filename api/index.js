@@ -10,11 +10,7 @@ const PORT = 4000;
 const app = express();
 const __dirname = path.resolve();
 
-app.use(express.static(path.join(__dirname, "/client/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
-});
+app.use(express.static(path.join(__dirname, "client", "dist")));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -26,6 +22,10 @@ connectDB();
 // Use of express router
 app.use("/api/user", userRouter, errorCheck);
 app.use("/api/auth", authRouter, errorCheck);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server started at Port: ${PORT}`);
