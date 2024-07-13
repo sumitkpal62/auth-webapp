@@ -1,0 +1,11 @@
+span{
+    font-weight: 700;
+}
+.listItem{
+    margin-bottom: 1rem;
+}
+
+.list{
+    list-style-type: decimal;
+    margin-left: 2rem;
+}
